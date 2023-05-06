@@ -11,7 +11,9 @@ export const KeyBoard: React.FC = () => {
   const dispacth = useDispatch();
   const postion = useSelector((state: rootStateBorad) => state.board.pos);
   const board = useSelector((state: rootStateBorad) => state.board.board);
-
+  const correctWord = useSelector(
+    (state: rootStateBorad) => state.board.correctWord
+  );
   const rows: string[] = [
     "q w e r t y u i o p",
     "a s d f g h j k l",
@@ -34,9 +36,9 @@ export const KeyBoard: React.FC = () => {
   };
   const handleEnter = () => {
     if (allWord.includes(boardCheck) === false) {
-      toast(" Wow so easy!", {
-        position: "top-center",
-        autoClose: 5000,
+      toast.warning("Invalid Word", {
+        position: "top-right",
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -46,6 +48,18 @@ export const KeyBoard: React.FC = () => {
       });
     } else if (allWord.includes(boardCheck)) {
       if (postion % 5 == 0 && postion !== 0) dispacth(incRow());
+    }
+    if (postion === 30 && allWord.includes(boardCheck)) {
+      toast.info(`The word is ${correctWord}`, {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
   return (
