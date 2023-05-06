@@ -3,30 +3,62 @@ import { KeyItems } from "../KeyItems/KeyItems";
 import "./KeyBoard.css";
 import { useSelector, useDispatch } from "react-redux";
 import { rootStateBorad } from "../Types/interfaceBoard";
-import { DesPos, setBoard } from "../../Redux/boardSlice";
+import { DesPos, incRow, setBoard } from "../../Redux/boardSlice";
+import { toast } from "react-toastify";
+import woList from "../../word.json";
+import "react-toastify/dist/ReactToastify.css";
 export const KeyBoard: React.FC = () => {
   const dispacth = useDispatch();
   const postion = useSelector((state: rootStateBorad) => state.board.pos);
   const board = useSelector((state: rootStateBorad) => state.board.board);
+
   const rows: string[] = [
     "q w e r t y u i o p",
     "a s d f g h j k l",
     "z x c v b n m",
   ];
+  let allWord: string[] = woList.words;
+  let boardCheck: string = `${board[postion - 5]}${board[postion - 4]}${
+    board[postion - 3]
+  }${board[postion - 2]}${board[postion - 1]}`.toLowerCase();
+  const row = useSelector((state: rootStateBorad) => state.board.row);
   const handlerClickBack = () => {
-    if (postion <= 0) return;
+    console.log("postion -1 /5 : ", Math.floor(postion - 1) / 5);
+    console.log("Row KeyBoard : ", row);
+
+    if (Math.floor(postion - 1) / 5 < row) return;
     const newBoard = [...board];
     newBoard[postion - 1] = "";
     dispacth(DesPos());
     dispacth(setBoard(newBoard));
   };
+  const handleEnter = () => {
+    if (allWord.includes(boardCheck) === false) {
+      toast(" Wow so easy!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else if (allWord.includes(boardCheck)) {
+      if (postion % 5 == 0 && postion !== 0) dispacth(incRow());
+    }
+  };
   return (
     <div className="keyboard-conatier">
       {rows.map((row, index) => {
         return (
-          <div className="row">
-            {index === 2 && <span className="letter-row">Enter</span>}
-            {row.split(" ").map((letter, index) => {
+          <div className="row" key={index}>
+            {index === 2 && (
+              <span className="letter-row" onClick={handleEnter}>
+                Enter
+              </span>
+            )}
+            {row.split(" ").map((letter) => {
               return (
                 <div className="letter-row">
                   <KeyItems letter={letter.toUpperCase()} />
